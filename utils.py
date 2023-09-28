@@ -6,15 +6,17 @@ from torch.utils.data import Dataset
 
 
 class MyLSTM(nn.Module):
-    def __init__(self, out_size, input_size, hidden_size, num_layers=3):
+    def __init__(self, in_dim, out_size, hidden_size, num_layers=3):
         super(MyLSTM, self).__init__()
-        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=num_layers, batch_first=True, dtype= torch.float64, dropout=0.8)
+        self.lstm = nn.LSTM(input_size=in_dim, hidden_size=hidden_size, num_layers=num_layers, batch_first=True, dtype= torch.float64, dropout=0.8)
         self.fc = nn.Linear(hidden_size, out_size, bias=True, dtype= torch.float64)
 
     def forward(self, x):
+        x = x.reshape(x.shape[0], x.shape[1], -1)
         output, _ = self.lstm(x)
-        output = self.fc(output)
+        output = self.fc(output)   
         return output[:, -1, :]
+
 
 class TimeSeriesDataset(Dataset):
     def __init__(self, data, in_window, out_window):
@@ -28,7 +30,7 @@ class TimeSeriesDataset(Dataset):
     def __getitem__(self, index):
         data = self.data[index : index + self.in_window]
         label = self.data[index + self.in_window : index + self.in_window + self.out_window]
-        return data.reshape(self.in_window, -1), label
+        return data, label
 
     
 def read_time_series_data(file_path):
@@ -48,6 +50,11 @@ def read_time_series_data(file_path):
             month_day_count[month] += 1
             data.append(int(count))
     data = np.array(data)
+    print("Normalize data with mean and standard deviation")
+    print("Mean: ", np.mean(data))
+    print("Standard Deviation: ", np.std(data))
+    np.save("./data/mean.npy", np.mean(data))
+    np.save("./data/std.npy", np.std(data))
     data = (data - np.mean(data)) / np.std(data)
     np.save("./data/month_count.npy", np.array(list(month_count.values())))
     np.save("./data/month_day_count.npy", np.array(list(month_day_count.values())))
