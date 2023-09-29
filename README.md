@@ -12,6 +12,8 @@ This folder
       └───data_daily.csv
 ```
 
+Please shoot me an email at whuang288@wisc.edu if the code does not run on your end, I will love to address it.
+
 ## To Run the App using Docker
 
 1. Build the container
