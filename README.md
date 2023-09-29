@@ -23,9 +23,10 @@ docker build . -t time-series
 2. Run the App
 
 ```
-docker run time-series
+docker run -p 8501:8501 time-series
 ```
 
+3. Follow the URL link to view the app in browser
 
 ## To Run the App without Docker
 
