@@ -6,4 +6,4 @@ RUN pip3 install tensorboard==2.14.0 --break-system-packages
 RUN pip3 install streamlit==1.27.0 --break-system-packages
 RUN pip3 install plotly==5.17.0 --break-system-packages
 COPY . ./app
-CMD ["python3", "/app/app.py"]
+CMD ["streamlit", "run", "app.py"]

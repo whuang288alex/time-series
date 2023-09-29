@@ -15,7 +15,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_type", type=str, default="Linear")
     parser.add_argument("--in_window", type=int, default=50)
     parser.add_argument("--out_window", type=int, default=50)
-    parser.add_argument("--device", type=str, default="cuda")
+    parser.add_argument("--device", type=str, default="cpu")
     
     # training configuration
     parser.add_argument("--lr", type=float, default=0.001)
@@ -44,6 +44,7 @@ if __name__ == "__main__":
         raise ValueError("Invalid model type!")
     model = model.to(args.device).to(torch.float64)
     
+    
     # define training components
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
@@ -54,6 +55,7 @@ if __name__ == "__main__":
     train_loss_curve = []
     test_loss_curve = []
     for epoch in range(args.epochs):
+        
         
         # train the model
         model.train()
@@ -67,6 +69,7 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
         
+        
         # test the model
         model.eval()    
         test_loss = 0
@@ -77,6 +80,7 @@ if __name__ == "__main__":
                 loss = criterion(y_pred, y)
                 test_loss += loss.detach().item()
         scheduler.step(test_loss)
+        
         
         # for visualization
         train_loss_curve.append(train_loss/len(train_loader))
