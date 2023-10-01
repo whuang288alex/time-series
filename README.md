@@ -59,5 +59,5 @@ python train_model.py --model_type Linear --in_window 50 --out_window 50
 5. Run the App
 
 ``` 
-streamlit run app.py
+streamlit run --server.address 0.0.0.0 app.py
 ```

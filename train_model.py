@@ -4,7 +4,7 @@ import numpy as np
 from argparse import ArgumentParser
 torch.manual_seed(3407)
 from utils import MyLSTM
-from utils import read_time_series_data, get_train_test_dataloader
+from utils import read_time_series_data, get_train_test_dataloader, get_model
 
 
 if __name__ == "__main__":
@@ -30,18 +30,7 @@ if __name__ == "__main__":
     train_loader, test_loader = get_train_test_dataloader(time_series_data, in_window=args.in_window, out_window=args.out_window, batch_size=args.batch_size, split=args.split)   
     
     # build the model
-    if args.model_type == "LSTM":
-        model = MyLSTM(in_dim=1, hidden_size=128, out_size=args.out_window, num_layers=3)
-    elif args.model_type == "Linear":
-        model = nn.Sequential(
-            nn.Linear(args.in_window, 32),
-            nn.ReLU(),
-            nn.Linear(32, 16),
-            nn.ReLU(),
-            nn.Linear(16, args.out_window)
-        )
-    else:
-        raise ValueError("Invalid model type!")
+    model = get_model(args.model_type, args.in_window, args.out_window)
     model = model.to(args.device).to(torch.float64)
     
     

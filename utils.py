@@ -4,20 +4,6 @@ import numpy as np
 import torch.nn as nn
 from torch.utils.data import Dataset
 
-
-class MyLSTM(nn.Module):
-    def __init__(self, in_dim, out_size, hidden_size, num_layers=3):
-        super(MyLSTM, self).__init__()
-        self.lstm = nn.LSTM(input_size=in_dim, hidden_size=hidden_size, num_layers=num_layers, batch_first=True, dtype= torch.float64, dropout=0.8)
-        self.fc = nn.Linear(hidden_size, out_size, bias=True, dtype= torch.float64)
-
-    def forward(self, x):
-        x = x.reshape(x.shape[0], x.shape[1], -1)
-        output, _ = self.lstm(x)
-        output = self.fc(output)   
-        return output[:, -1, :]
-
-
 class TimeSeriesDataset(Dataset):
     def __init__(self, data, in_window, out_window):
         self.data = data
@@ -70,3 +56,15 @@ def get_train_test_dataloader(data=None, in_window=50, out_window=50, batch_size
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     return train_loader, test_loader
     
+    
+def get_model(model_type, in_window, out_window):
+    assert model_type in ["Linear"], "Invalid model type!"
+    if model_type == "Linear":
+        model = nn.Sequential(
+            nn.Linear(in_window, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, out_window)
+        )
+    return model
