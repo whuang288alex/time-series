@@ -3,7 +3,6 @@ import torch.nn as nn
 import numpy as np
 from argparse import ArgumentParser
 torch.manual_seed(3407)
-from utils import MyLSTM
 from utils import read_time_series_data, get_train_test_dataloader, get_model
 
 
@@ -85,10 +84,8 @@ if __name__ == "__main__":
         for index in range(0, len(time_series_data) - args.in_window - args.out_window, args.out_window):
             data = time_series_data[index : index + args.in_window]
             label = time_series_data[index + args.in_window : index + args.in_window + args.out_window]
-            if args.model_type == "LSTM":
-                data = torch.FloatTensor(data.reshape(1, -1, 1)).to(args.device).to(torch.float64)
-            elif args.model_type == "Linear":
-                data = torch.FloatTensor(data.reshape(1, -1)).to(args.device).to(torch.float64)
+            if args.model_type == "Linear":
+                data = torch.FloatTensor(data).to(args.device).to(torch.float64)
             predicted = model(data)
             y.append(label)
             y_.append(predicted.detach().cpu().numpy())
